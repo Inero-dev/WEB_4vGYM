@@ -1,0 +1,24 @@
+<?php
+
+namespace App\Services;
+
+use App\Model\ActivityTypeDTO;
+use App\Entity\ActivityType;
+use Doctrine\ORM\EntityManagerInterface;
+
+class ActivityTypesService
+{
+    
+    public function __construct(private EntityManagerInterface $entityManager){}
+
+    public function getTypes(): array
+    {
+        $types = $this->entityManager->getRepository(ActivityType::class)->findAll(); //busca de la bbdd todos los de clase Tipo
+        $typesDTO = [];
+        foreach ($types as $type) {
+            $typesDTO[] = new ActivityTypeDTO($type->getId(), $type->getName()); //los convierte en DTO modelos
+        }
+        return $typesDTO; //los devuelve
+    }
+    
+}
