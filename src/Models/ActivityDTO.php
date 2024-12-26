@@ -1,8 +1,9 @@
 <?php
 
 namespace App\Models;
+use DateTime; 
 
-class ActividadDTO //TODO MIRAR SI ES NECESARIO VALIDAR (MonitorDTO ARRAY) Y MIRAR SI SE NECESITA ADDMONITOR
+class ActivityDTO //TODO MIRAR SI ES NECESARIO VALIDAR (MonitorDTO ARRAY) Y MIRAR SI SE NECESITA ADDMONITOR
 {
     private int $id;
     private string $name;

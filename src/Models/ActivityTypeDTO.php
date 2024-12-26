@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-class ActividadDTO //TODO GENERAR SETERS SI ES NECESARIO
+class ActivityTypeDTO //TODO GENERAR SETERS SI ES NECESARIO
 {
     private int $id;
     private string $name;

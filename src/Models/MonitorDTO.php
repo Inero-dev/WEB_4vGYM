@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-class ActividadDTO
+class MonitorDTO
 {
     private int $id;
     private string $name;
