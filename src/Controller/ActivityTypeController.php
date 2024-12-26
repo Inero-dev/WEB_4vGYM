@@ -8,12 +8,10 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class ActivityTypeController extends AbstractController
 {
-    #[Route('/activity/type', name: 'app_activity_type')]
-    public function index(): JsonResponse
+    #[Route('/activity_types', name: 'get_activity_type')]
+    public function getActivityTypes(): JsonResponse
     {
-        return $this->json([
-            'message' => 'Welcome to your new controller!',
-            'path' => 'src/Controller/ActivityTypeController.php',
-        ]);
+        return $this->json([/* array de tipos de actividad */]);
+
     }
 }
