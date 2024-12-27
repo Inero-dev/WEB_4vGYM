@@ -14,7 +14,6 @@ class ActivityTypeController extends AbstractController
     #[Route('/activity_types', name: 'get_activity_type', methods: ['GET'])]
     public function getActivityTypes(): JsonResponse
     {
-
         return $this->json($this->activityTypeService->getTypes());
     }
 }

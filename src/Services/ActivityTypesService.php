@@ -14,10 +14,9 @@ class ActivityTypesService
 
     public function getTypes(): array
     {
-        return $this->entityManager->getRepository(ActivityType::class)->findAll(); //busca de la bbdd todos los de clase Tipo
-
-
-        /*$types = $this->entityManager->getRepository(ActivityType::class)->findAll();
+        //return $this->entityManager->getRepository(ActivityType::class)->findAll(); //busca de la bbdd todos los de clase Tipo
+        
+        $types = $this->entityManager->getRepository(ActivityType::class)->findAll();
         
         $typesDTO = [];
         foreach ($types as $type) {
@@ -25,7 +24,8 @@ class ActivityTypesService
             $typesDTO[] = new ActivityTypeDTO($type->getId(), $type->getName(), $type->getNumberMonitors()); //los convierte en DTO modelos
         }
 
-        return $typesDTO;*/
+        return $typesDTO;
+        
     }
     
 }
