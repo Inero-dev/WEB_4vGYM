@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+
 class MonitorDTO
 {
     private int $id;
@@ -26,7 +27,7 @@ class MonitorDTO
 
     public function getName(): string
     {
-        return $this->name;    
+        return $this->name;
     }
 
     public function getEmail(): string
@@ -42,5 +43,42 @@ class MonitorDTO
     public function getPhoto(): string
     {
         return $this->photo;
+    }
+
+    //genera los getters
+    public function setId(int $id): void
+    {
+        $this->id = $id;
+    }
+
+    public function setName(string $name): void
+    {
+        $this->name = $name;
+    }
+
+    public function setEmail(string $email): void
+    {
+        $this->email = $email;
+    }
+
+    public function setPhone(string $phone): void
+    {
+        $this->phone = $phone;
+    }
+
+    public function setPhoto(string $photo): void
+    {
+        $this->photo = $photo;
+    }
+
+    public function json(): array
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'email' => $this->email,
+            'phone' => $this->phone,
+            'photo' => $this->photo,
+        ];
     }
 }

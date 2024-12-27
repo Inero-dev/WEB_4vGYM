@@ -10,7 +10,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 class ActivityTypesService
 {
     
-    public function __construct(private EntityManagerInterface $entityManager, private SerializerInterface $serializer){}
+    public function __construct(private EntityManagerInterface $entityManager){}
 
     public function getTypes(): array
     {
