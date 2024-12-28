@@ -63,23 +63,23 @@ class ActivityService
 
         return $listActivitiesDTO;
     }
-     public function addActivity(array $activityData): ActivityDTO
+     public function addActivity(ActivityNewDTO $activityNewDTO): ActivityDTO
     {
         //Craemos la entidad ACTIVITY
         $newActivityEntity = new Activity();
         $newActivityEntity->setName(''); //Este no está en wl Swagger. Pero es necesario? Dejo del nombre vacío porque no viene en el JSON
-        $newActivityEntity->setActivityTypeId($activityData['activity_type_id']);
-        $newActivityEntity->setStartDate(new \DateTime($activityData['date_start']));
-        $newActivityEntity->setEndDate(new \DateTime($activityData['date_end']));
+        $newActivityEntity->setActivityTypeId($activityNewDTO->getActivityType()->getId()); // Accedemos correctamente usando el getter
+        $newActivityEntity->setStartDate($activityNewDTO->getStartDate()); // Fecha de inicio
+        $newActivityEntity->setEndDate($activityNewDTO->getEndDate()); // Fecha de fin
 
         // Persistir la actividad
         $this->entityManager->persist($newActivityEntity);
 
         // Crear y persistir los monitores relacionados
-        foreach ($activityData['monitors_id'] as $monitorId) {
+        foreach ($activityNewDTO->getMonitors() as $monitorDTO) {
             $activityMonitor = new ActivityMonitors();
             $activityMonitor->setIdActivity($newActivityEntity->getId());
-            $activityMonitor->setIdMonitor($monitorId);
+            $activityMonitor->setIdMonitor($monitorDTO->id); // ID del monitor
             $this->entityManager->persist($activityMonitor);
         }
 
@@ -87,7 +87,7 @@ class ActivityService
         $this->entityManager->flush();
 
         // Construir un DTO del tipo de actividad
-        $activityTypeEntity = $this->entityManager->getRepository(ActivityType::class)->find($activityData['activity_type_id']);
+        $activityTypeEntity = $this->entityManager->getRepository(ActivityType::class)->find($activityNewDTO->getActivityType()->getId());
         $activityTypeDTO = new ActivityTypeDTO(
             $activityTypeEntity->getId(),
             $activityTypeEntity->getName(),
@@ -96,20 +96,14 @@ class ActivityService
 
         // Obtener los monitores relacionados y construir MonitorDTOs
         $monitors = [];
-        foreach ($activityData['monitors_id'] as $monitorId) {
-            $monitorEntity = $this->entityManager->getRepository(Monitor::class)->find($monitorId);
+        foreach ($activityNewDTO->getMonitors() as $monitorDTO) {
+            $monitorEntity = $this->entityManager->getRepository(Monitor::class)->find($monitorDTO->id);
             $monitors[] = new MonitorDTO($monitorEntity->getId(), $monitorEntity->getName(), $monitorEntity->getEmail(), $monitorEntity->getPhone(), $monitorEntity->getPhoto());
         }
 
-        // Mapear la entidad a un DTO
+        //pasar la entidad a un DTO
 
-        $activityDTO = new ActivityDTO(
-            $newActivityEntity->getId(),
-            $activityTypeDTO,
-            $monitors,
-            $newActivityEntity->getStartDate(),
-            $newActivityEntity->getEndDate()
-        );
+        $activityDTO = new ActivityDTO($newActivityEntity->getId(),$activityTypeDTO, $monitors,$newActivityEntity->getStartDate(),$newActivityEntity->getEndDate());
         return $activityDTO;
 
     }

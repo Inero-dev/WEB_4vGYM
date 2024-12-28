@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Model;
+namespace App\Models;
 
 use DateTime; 
 use App\Models\ActivityTypeDTO;
@@ -15,6 +15,28 @@ class ActivityNewDTO
         private DateTime $start_date,
         private DateTime $end_date,
     ) {}
+    // Getter para 'activityType'
+    public function getActivityType(): ActivityTypeDTO
+    {
+        return $this->activityType;
+    }
 
+    // Getter para 'monitors'
+    public function getMonitors(): array
+    {
+        return $this->monitors;
+    }
+
+    // Getter para 'start_date'
+    public function getStartDate(): DateTime
+    {
+        return $this->start_date;
+    }
+
+    // Getter para 'end_date'
+    public function getEndDate(): DateTime
+    {
+        return $this->end_date;
+    }
 
 }
