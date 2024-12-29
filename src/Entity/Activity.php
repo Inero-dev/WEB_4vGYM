@@ -14,9 +14,6 @@ class Activity
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 40)]
-    private ?string $name = null;
-
     #[ORM\Column]
     private ?int $activityTypeId = null;
 
@@ -29,18 +26,6 @@ class Activity
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getName(): ?string
-    {
-        return $this->name;
-    }
-
-    public function setName(string $name): static
-    {
-        $this->name = $name;
-
-        return $this;
     }
 
     public function getActivityTypeId(): ?int
