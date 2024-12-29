@@ -20,8 +20,21 @@ class ActivityService
 
     public function __construct(private EntityManagerInterface $entityManager, private SerializerInterface $serializer) {}
 
-    public function getListActivities(): array
+    public function getListActivities(?string $date = null): array //TODO falta el filtrado
     {
+
+        if ($date) {
+            // Convertimos la fecha del formato 'dd-MM-yyyy' al formato DateTime
+            $dateObj = \DateTime::createFromFormat('d-m-Y', $date);
+            if (!$dateObj) {
+                throw new \InvalidArgumentException("Formato de fecha no válido. Debe ser dd-MM-yyyy.");
+            }
+
+            $activities = $this->entityManager->getRepository(Activity::class)->findBy(['startDate' => $dateObj]);
+        } else {
+
+            $activities = $this->entityManager->getRepository(Activity::class)->findAll();
+        }
 
         $activities = $this->entityManager->getRepository(Activity::class)->findAll();
 
@@ -65,12 +78,36 @@ class ActivityService
     }
      public function addActivity(ActivityNewDTO $activityNewDTO): ActivityDTO
     {
+        //VALIDACIONES
+        //validar que la hora de inicio sea una de las 3s: 09:00, 13:30, 17:30
+        $validStartTimes = ['09:00', '13:30', '17:30'];
+        $startTime = $activityNewDTO->getStartDate()->format('H:i');
+
+        if (!in_array($startTime, $validStartTimes)) {
+            throw new \Exception('La actividad debe comenzar a las 09:00, 13:30 o 17:30');
+        }
+
+        //validar que la duración de la actividad sea de 90 minutos
+        $duration = $activityNewDTO->getEndDate()->getTimestamp() - $activityNewDTO->getStartDate()->getTimestamp();
+        if ($duration !== 90 * 60) {
+            throw new \Exception('La actividad debe tener una duración de 90 minutos');
+        }
+
+        // Validación de monitores (comprobamos el número de monitores por tipo de actividad)
+        $activityTypeId = $activityNewDTO->getActivityType()->getId();
+        $activityTypeEntity = $this->entityManager->getRepository(ActivityType::class)->find($activityTypeId);
+        $requiredMonitors = $activityTypeEntity->getNumberMonitors();
+
+        if (count($activityNewDTO->getMonitors()) < $requiredMonitors) {
+            throw new \Exception("La actividad requiere al menos {$requiredMonitors} monitores.");
+        }
+
         //Craemos la entidad ACTIVITY
         $newActivityEntity = new Activity();
         $newActivityEntity->setName(''); //Este no está en wl Swagger. Pero es necesario? Dejo del nombre vacío porque no viene en el JSON
-        $newActivityEntity->setActivityTypeId($activityNewDTO->getActivityType()->getId()); // Accedemos correctamente usando el getter
-        $newActivityEntity->setStartDate($activityNewDTO->getStartDate()); // Fecha de inicio
-        $newActivityEntity->setEndDate($activityNewDTO->getEndDate()); // Fecha de fin
+        $newActivityEntity->setActivityTypeId($activityNewDTO->getActivityType()->getId()); 
+        $newActivityEntity->setStartDate($activityNewDTO->getStartDate()); 
+        $newActivityEntity->setEndDate($activityNewDTO->getEndDate()); 
 
         // Persistir la actividad
         $this->entityManager->persist($newActivityEntity);
@@ -106,6 +143,80 @@ class ActivityService
         $activityDTO = new ActivityDTO($newActivityEntity->getId(),$activityTypeDTO, $monitors,$newActivityEntity->getStartDate(),$newActivityEntity->getEndDate());
         return $activityDTO;
 
+    }
+
+    public function updateActivity(ActivityNewDTO $activityNew, int $id): void
+    {
+        // buscar la actividad existente por id
+        $oldActivityEntity = $this->entityManager->getRepository(Activity::class)->findOneBy(['id' => $id]);
+
+        // Verificar si existe
+        if (!$oldActivityEntity) {
+            throw new \Exception("Actividad con ID $id no encontrada");
+        }
+
+        // Validar la hora de inicio permitida
+        $validStartTimes = ['09:00', '13:30', '17:30'];
+        $startTime = $activityNew->getStartDate()->format('H:i');
+        if (!in_array($startTime, $validStartTimes)) {
+            throw new \Exception("La actividad debe comenzar a las 09:00, 13:30, o 17:30");
+        }
+
+        // Validar la duración (90 minutos)
+        $duration = $activityNew->getStartDate()->diff($activityNew->getEndDate());
+        if ($duration->h !== 1 || $duration->i !== 30) {
+            throw new \Exception("La duración de la actividad debe ser de exactamente 90 minutos");
+        }
+
+        // Validar que el número de monitores es igual al requerido por el tipo de actividad
+        $activityType = $this->entityManager->getRepository(ActivityType::class)->find($activityNew->getActivityType()->getId());
+        if (!$activityType) {
+            throw new \Exception("Tipo de actividad no encontrado");
+        }
+
+        if (count($activityNew->getMonitors()) !== $activityType->getNumberMonitors()) {
+            throw new \Exception("El número de monitores no coincide con el requerido por el tipo de actividad");
+        }
+
+        // Actualizar las propiedades de la actividad
+        $oldActivityEntity->setActivityTypeId($activityNew->getActivityType()->getId());
+        $oldActivityEntity->setStartDate($activityNew->getStartDate());
+        $oldActivityEntity->setEndDate($activityNew->getEndDate());
+
+        // Eliminar monitores anteriores relacionados con esta actividad
+        $oldMonitors = $this->entityManager->getRepository(ActivityMonitors::class)->findBy(['id_activity' => $id]);
+        foreach ($oldMonitors as $oldMonitor) {
+            $this->entityManager->remove($oldMonitor);
+        }
+
+        // Agregar nuevos monitores
+        foreach ($activityNew->getMonitors() as $monitorDTO) {
+            $activityMonitor = new ActivityMonitors();
+            $activityMonitor->setIdActivity($id);
+            $activityMonitor->setIdMonitor($monitorDTO->id);
+            $this->entityManager->persist($activityMonitor);
+        }
+
+        // Persistir los cambios en la base de datos
+        $this->entityManager->persist($oldActivityEntity);
+        $this->entityManager->flush();
+    }
+    public function deleteActivity(int $id): void
+    {
+        $activityEntity = $this->entityManager->getRepository(Activity::class)->findOneBy(['id' => $id]);
+
+        if (!$activityEntity) {
+            throw new \Exception("Actividad con ID $id no encontrada");
+        }
+
+        // Eliminar monitores relacionados con la actividad
+        $activityMonitors = $this->entityManager->getRepository(ActivityMonitors::class)->findBy(['id_activity' => $id]);
+        foreach ($activityMonitors as $activityMonitor) {
+            $this->entityManager->remove($activityMonitor);
+        }
+
+        $this->entityManager->remove($activityEntity);
+        $this->entityManager->flush();
     }
 
 }

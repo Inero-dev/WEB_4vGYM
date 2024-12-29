@@ -40,7 +40,7 @@ class MonitorController extends AbstractController
         $this->monitorsService->updateMonitor($monitorNewDTO, $monitorId);
         // Manejo de errores si el JSON no es válido
         if (json_last_error() !== JSON_ERROR_NONE) {
-            return $this->json(['error' => 'JSON inválido'], 400);
+            return $this->json(['error' => 'JSON inválido'], 400); 
         }
         return $this->json(['message' => 'Monitor actualizado correctamente']);
     }
