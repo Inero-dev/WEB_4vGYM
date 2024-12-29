@@ -10,7 +10,6 @@ class ActivityNewDTO
 {
 
     public function __construct(
-        public int $id,
         #[Assert\NotBlank(message: "El tipo de actividad es obligatorio")]
         private ActivityTypeDTO $activityType,
         #[Assert\NotBlank(message: "Los monitores son obligatorios")]

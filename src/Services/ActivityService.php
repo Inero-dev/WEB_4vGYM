@@ -76,6 +76,7 @@ class ActivityService
 
         return $listActivitiesDTO;
     }
+    
      public function addActivity(ActivityNewDTO $activityNewDTO): ActivityDTO
     {
         //VALIDACIONES
@@ -201,6 +202,7 @@ class ActivityService
         $this->entityManager->persist($oldActivityEntity);
         $this->entityManager->flush();
     }
+
     public function deleteActivity(int $id): void
     {
         $activityEntity = $this->entityManager->getRepository(Activity::class)->findOneBy(['id' => $id]);
