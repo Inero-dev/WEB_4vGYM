@@ -9,9 +9,10 @@ use Symfony\Component\Validator\Constraints as Assert;
 class ActivityNewDTO
 {
 
+
     public function __construct(
         #[Assert\NotBlank(message: "El tipo de actividad es obligatorio")]
-        private ActivityTypeDTO $activityType,
+        private int $idType,
         #[Assert\NotBlank(message: "Los monitores son obligatorios")]
         private array $monitors, //MonitorDTO
         #[Assert\NotBlank(message: "La fecha de inicio es obligatoria")]
@@ -19,10 +20,11 @@ class ActivityNewDTO
         #[Assert\NotBlank(message: "La fecha de fin es obligatoria")]
         private DateTime $end_date,
     ) {}
-    public function getActivityType(): ActivityTypeDTO
+    public function getIdType(): int
     {
-        return $this->activityType;
+        return $this->idType;
     }
+
 
     public function getMonitors(): array
     {

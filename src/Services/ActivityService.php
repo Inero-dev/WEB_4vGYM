@@ -47,7 +47,7 @@ class ActivityService
             $typeDTO = new ActivityTypeDTO($type->getId(), $type->getName(), $type->getNumberMonitors());
 
 
-            $activityMonitors = $this->entityManager->getRepository(ActivityMonitors::class)->findBy(['id_activity' => $activity->getId()]);
+            $activityMonitors = $this->entityManager->getRepository(ActivityMonitors::class)->findBy(['idActivity' => $activity->getId()]);
             $monitorDTOs = [];
 
             foreach ($activityMonitors as $activityMonitor) {
@@ -95,7 +95,7 @@ class ActivityService
         }
 
         // Validación de monitores (comprobamos el número de monitores por tipo de actividad)
-        $activityTypeId = $activityNewDTO->getActivityType()->getId();
+        $activityTypeId = $activityNewDTO->getIdType();
         $activityTypeEntity = $this->entityManager->getRepository(ActivityType::class)->find($activityTypeId);
         $requiredMonitors = $activityTypeEntity->getNumberMonitors();
 
@@ -106,7 +106,7 @@ class ActivityService
         //Craemos la entidad ACTIVITY
         $newActivityEntity = new Activity();
         $newActivityEntity->setName(''); //Este no está en wl Swagger. Pero es necesario? Dejo del nombre vacío porque no viene en el JSON
-        $newActivityEntity->setActivityTypeId($activityNewDTO->getActivityType()->getId()); 
+        $newActivityEntity->setActivityTypeId($activityNewDTO->getIdType()); 
         $newActivityEntity->setStartDate($activityNewDTO->getStartDate()); 
         $newActivityEntity->setEndDate($activityNewDTO->getEndDate()); 
 
@@ -125,7 +125,7 @@ class ActivityService
         $this->entityManager->flush();
 
         // Construir un DTO del tipo de actividad
-        $activityTypeEntity = $this->entityManager->getRepository(ActivityType::class)->find($activityNewDTO->getActivityType()->getId());
+        $activityTypeEntity = $this->entityManager->getRepository(ActivityType::class)->find($activityNewDTO->getIdType());
         $activityTypeDTO = new ActivityTypeDTO(
             $activityTypeEntity->getId(),
             $activityTypeEntity->getName(),
@@ -170,7 +170,7 @@ class ActivityService
         }
 
         // Validar que el número de monitores es igual al requerido por el tipo de actividad
-        $activityType = $this->entityManager->getRepository(ActivityType::class)->find($activityNew->getActivityType()->getId());
+        $activityType = $this->entityManager->getRepository(ActivityType::class)->find($activityNew->getIdType());
         if (!$activityType) {
             throw new \Exception("Tipo de actividad no encontrado");
         }
@@ -180,12 +180,12 @@ class ActivityService
         }
 
         // Actualizar las propiedades de la actividad
-        $oldActivityEntity->setActivityTypeId($activityNew->getActivityType()->getId());
+        $oldActivityEntity->setActivityTypeId($activityNew->getIdType());
         $oldActivityEntity->setStartDate($activityNew->getStartDate());
         $oldActivityEntity->setEndDate($activityNew->getEndDate());
 
         // Eliminar monitores anteriores relacionados con esta actividad
-        $oldMonitors = $this->entityManager->getRepository(ActivityMonitors::class)->findBy(['id_activity' => $id]);
+        $oldMonitors = $this->entityManager->getRepository(ActivityMonitors::class)->findBy(['idActivity' => $id]);
         foreach ($oldMonitors as $oldMonitor) {
             $this->entityManager->remove($oldMonitor);
         }
@@ -212,7 +212,7 @@ class ActivityService
         }
 
         // Eliminar monitores relacionados con la actividad
-        $activityMonitors = $this->entityManager->getRepository(ActivityMonitors::class)->findBy(['id_activity' => $id]);
+        $activityMonitors = $this->entityManager->getRepository(ActivityMonitors::class)->findBy(['idActivity' => $id]);
         foreach ($activityMonitors as $activityMonitor) {
             $this->entityManager->remove($activityMonitor);
         }
