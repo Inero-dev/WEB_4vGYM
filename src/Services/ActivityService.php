@@ -105,7 +105,6 @@ class ActivityService
 
         //Craemos la entidad ACTIVITY
         $newActivityEntity = new Activity();
-        $newActivityEntity->setName(''); //Este no está en wl Swagger. Pero es necesario? Dejo del nombre vacío porque no viene en el JSON
         $newActivityEntity->setActivityTypeId($activityNewDTO->getIdType()); 
         $newActivityEntity->setStartDate($activityNewDTO->getStartDate()); 
         $newActivityEntity->setEndDate($activityNewDTO->getEndDate()); 
