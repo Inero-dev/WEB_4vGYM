@@ -113,16 +113,18 @@ class ActivityService
         // Persistir la actividad
         $this->entityManager->persist($newActivityEntity);
 
+        // Confirmar la transacción
+        $this->entityManager->flush();
+
         // Crear y persistir los monitores relacionados
-        foreach ($activityNewDTO->getMonitors() as $monitorDTO) {
+        foreach ($activityNewDTO->getMonitors() as  $monitorDTO) {
             $activityMonitor = new ActivityMonitors();
             $activityMonitor->setIdActivity($newActivityEntity->getId());
-            $activityMonitor->setIdMonitor($monitorDTO->id); // ID del monitor
+            $activityMonitor->setIdMonitor($monitorDTO); // ID del monitor
             $this->entityManager->persist($activityMonitor);
         }
 
-        // Confirmar la transacción
-        $this->entityManager->flush();
+
 
         // Construir un DTO del tipo de actividad
         $activityTypeEntity = $this->entityManager->getRepository(ActivityType::class)->find($activityNewDTO->getIdType());
@@ -135,7 +137,8 @@ class ActivityService
         // Obtener los monitores relacionados y construir MonitorDTOs
         $monitors = [];
         foreach ($activityNewDTO->getMonitors() as $monitorDTO) {
-            $monitorEntity = $this->entityManager->getRepository(Monitor::class)->find($monitorDTO->id);
+            $monitorEntity = $this->entityManager->getRepository(Monitor::class)->find($monitorDTO);
+
             $monitors[] = new MonitorDTO($monitorEntity->getId(), $monitorEntity->getName(), $monitorEntity->getEmail(), $monitorEntity->getPhone(), $monitorEntity->getPhoto());
         }
 
@@ -194,7 +197,7 @@ class ActivityService
         foreach ($activityNew->getMonitors() as $monitorDTO) {
             $activityMonitor = new ActivityMonitors();
             $activityMonitor->setIdActivity($id);
-            $activityMonitor->setIdMonitor($monitorDTO->id);
+            $activityMonitor->setIdMonitor($monitorDTO);
             $this->entityManager->persist($activityMonitor);
         }
 
