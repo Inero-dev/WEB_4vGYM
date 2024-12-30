@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\MonitorRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: MonitorRepository::class)]
@@ -22,8 +24,19 @@ class Monitor
     #[ORM\Column(length: 9)]
     private ?string $phone = null;
 
-    #[ORM\Column(length: 100, nullable: true)]
+    #[ORM\Column(length: 250)]
     private ?string $photo = null;
+
+    /**
+     * @var Collection<int, ActivityMonitor>
+     */
+    #[ORM\OneToMany(targetEntity: ActivityMonitor::class, mappedBy: 'idMonitor', orphanRemoval: true)]
+    private Collection $activities;
+
+    public function __construct()
+    {
+        $this->activities = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -71,10 +84,41 @@ class Monitor
         return $this->photo;
     }
 
-    public function setPhoto(?string $photo): static
+    public function setPhoto(string $photo): static
     {
         $this->photo = $photo;
 
         return $this;
     }
+
+    /**
+     * @return Collection<int, ActivityMonitor>
+     */
+    public function getActivities(): Collection
+    {
+        return $this->activities;
+    }
+
+    public function addActivity(ActivityMonitor $activity): static
+    {
+        if (!$this->activities->contains($activity)) {
+            $this->activities->add($activity);
+            $activity->setIdMonitor($this);
+        }
+
+        return $this;
+    }
+
+    public function removeActivity(ActivityMonitor $activity): static
+    {
+        if ($this->activities->removeElement($activity)) {
+            // set the owning side to null (unless already changed)
+            if ($activity->getIdMonitor() === $this) {
+                $activity->setIdMonitor(null);
+            }
+        }
+
+        return $this;
+    }
+
 }

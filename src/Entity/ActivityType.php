@@ -17,7 +17,10 @@ class ActivityType
     private ?string $name = null;
 
     #[ORM\Column]
-    private ?int $number_monitors = null;
+    private ?int $NumerOfMonitors = null;
+
+    #[ORM\ManyToOne(inversedBy: 'idType')]
+    private ?Activity $activities = null;
 
     public function getId(): ?int
     {
@@ -36,14 +39,26 @@ class ActivityType
         return $this;
     }
 
-    public function getNumberMonitors(): ?int
+    public function getNumerOfMonitors(): ?int
     {
-        return $this->number_monitors;
+        return $this->NumerOfMonitors;
     }
 
-    public function setNumberMonitors(int $number_monitors): static
+    public function setNumerOfMonitors(int $NumerOfMonitors): static
     {
-        $this->number_monitors = $number_monitors;
+        $this->NumerOfMonitors = $NumerOfMonitors;
+
+        return $this;
+    }
+
+    public function getActivities(): ?Activity
+    {
+        return $this->activities;
+    }
+
+    public function setActivities(?Activity $activities): static
+    {
+        $this->activities = $activities;
 
         return $this;
     }
