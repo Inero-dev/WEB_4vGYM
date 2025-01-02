@@ -18,7 +18,7 @@ class Monitor
     #[ORM\Column(length: 40)]
     private ?string $name = null;
 
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(length: 150)]
     private ?string $email = null;
 
     #[ORM\Column(length: 9)]
@@ -28,14 +28,14 @@ class Monitor
     private ?string $photo = null;
 
     /**
-     * @var Collection<int, ActivityMonitors>
+     * @var Collection<int, ActivityMonitor>
      */
-    #[ORM\OneToMany(targetEntity: ActivityMonitors::class, mappedBy: 'Monitor', orphanRemoval: true)]
-    private Collection $Monitors;
+    #[ORM\OneToMany(targetEntity: ActivityMonitor::class, mappedBy: 'monitor', orphanRemoval: true)]
+    private Collection $ActivitiesOfMonitor;
 
     public function __construct()
     {
-        $this->Monitors = new ArrayCollection();
+        $this->ActivitiesOfMonitor = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -92,33 +92,32 @@ class Monitor
     }
 
     /**
-     * @return Collection<int, ActivityMonitors>
+     * @return Collection<int, ActivityMonitor>
      */
-    public function getMonitors(): Collection
+    public function getActivitiesOfMonitor(): Collection
     {
-        return $this->Monitors;
+        return $this->ActivitiesOfMonitor;
     }
 
-    public function addMonitor(ActivityMonitors $monitor): static
+    public function addActivitiesOfMonitor(ActivityMonitor $activitiesOfMonitor): static
     {
-        if (!$this->Monitors->contains($monitor)) {
-            $this->Monitors->add($monitor);
-            $monitor->setMonitor($this);
+        if (!$this->ActivitiesOfMonitor->contains($activitiesOfMonitor)) {
+            $this->ActivitiesOfMonitor->add($activitiesOfMonitor);
+            $activitiesOfMonitor->setMonitor($this);
         }
 
         return $this;
     }
 
-    public function removeMonitor(ActivityMonitors $monitor): static
+    public function removeActivitiesOfMonitor(ActivityMonitor $activitiesOfMonitor): static
     {
-        if ($this->Monitors->removeElement($monitor)) {
+        if ($this->ActivitiesOfMonitor->removeElement($activitiesOfMonitor)) {
             // set the owning side to null (unless already changed)
-            if ($monitor->getMonitor() === $this) {
-                $monitor->setMonitor(null);
+            if ($activitiesOfMonitor->getMonitor() === $this) {
+                $activitiesOfMonitor->setMonitor(null);
             }
         }
 
         return $this;
     }
-
 }

@@ -22,6 +22,21 @@ class Activity
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $end_date = null;
 
+    #[ORM\ManyToOne(inversedBy: 'activities')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?ActivityType $type = null;
+
+    /**
+     * @var Collection<int, ActivityMonitor>
+     */
+    #[ORM\OneToMany(targetEntity: ActivityMonitor::class, mappedBy: 'Activity', orphanRemoval: true)]
+    private Collection $monitorsOfActivity;
+
+    public function __construct()
+    {
+        $this->monitorsOfActivity = new ArrayCollection();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -51,5 +66,45 @@ class Activity
         return $this;
     }
 
-    
+    public function getType(): ?ActivityType
+    {
+        return $this->type;
+    }
+
+    public function setType(?ActivityType $type): static
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ActivityMonitor>
+     */
+    public function getMonitorsOfActivity(): Collection
+    {
+        return $this->monitorsOfActivity;
+    }
+
+    public function addMonitorsOfActivity(ActivityMonitor $monitorsOfActivity): static
+    {
+        if (!$this->monitorsOfActivity->contains($monitorsOfActivity)) {
+            $this->monitorsOfActivity->add($monitorsOfActivity);
+            $monitorsOfActivity->setActivity($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMonitorsOfActivity(ActivityMonitor $monitorsOfActivity): static
+    {
+        if ($this->monitorsOfActivity->removeElement($monitorsOfActivity)) {
+            // set the owning side to null (unless already changed)
+            if ($monitorsOfActivity->getActivity() === $this) {
+                $monitorsOfActivity->setActivity(null);
+            }
+        }
+
+        return $this;
+    }
 }

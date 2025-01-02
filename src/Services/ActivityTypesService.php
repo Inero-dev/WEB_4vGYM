@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Models\ActivityTypeDTO;
 use App\Entity\ActivityType;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Serializer\SerializerInterface;
 
 class ActivityTypesService
 {
@@ -21,7 +20,7 @@ class ActivityTypesService
         $typesDTO = [];
         foreach ($types as $type) {
             log($type->getId());
-            $typesDTO[] = new ActivityTypeDTO($type->getId(), $type->getName(), $type->getNumberMonitors()); //los convierte en DTO modelos
+            $typesDTO[] = new ActivityTypeDTO($type->getId(), $type->getName(), $type->getNumberOfMonitors()); //los convierte en DTO modelos
         }
 
         return $typesDTO;

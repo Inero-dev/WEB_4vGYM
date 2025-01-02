@@ -16,7 +16,7 @@ class ActivityController extends AbstractController
 {
     public function __construct(private ActivityService $activityService    ) {}
 
-    #[Route('/list_activities', name: 'app_activities', methods: ['GET'])]
+    #[Route('/activities', name: 'app_activities', methods: ['GET'])]
     //función pasar una fecha, controlar si la fecha es correcta o no, si es correcta pasarla al servicio
     public function getActivities(?string $date, LoggerInterface $logger): JsonResponse 
     {
@@ -31,7 +31,7 @@ class ActivityController extends AbstractController
         return $this->json($this->activityService->getListActivities($dateObject));
     }
 
-    #[Route('/add_activity', name: 'app_post_activity', methods: ['POST'])]
+    #[Route('/activities', name: 'app_post_activity', methods: ['POST'])]
     public function addActivity(#[MapRequestPayload(acceptFormat: 'json', validationFailedStatusCode: Response::HTTP_BAD_REQUEST)] ActivityNewDTO $activityNewDTO): JsonResponse
     {
         // Llamamos al servicio para agregar la actividad con el DTO
@@ -45,7 +45,7 @@ class ActivityController extends AbstractController
     }
 
 
-    #[Route('/list_activities/{activityId}', name: 'app_edit_activity', methods: ['PUT'])]
+    #[Route('/activities/{activityId}', name: 'app_edit_activity', methods: ['PUT'])]
     public function updateActivity(#[MapRequestPayload(acceptFormat: 'json', validationFailedStatusCode: Response::HTTP_NOT_FOUND)] ActivityNewDTO $activityNewDTO, String $activityId): JsonResponse
     {
         $this->activityService->updateActivity($activityNewDTO, $activityId);
@@ -56,7 +56,7 @@ class ActivityController extends AbstractController
         return $this->json(['message' => 'Activity actualizado correctamente']);
     }
 
-    #[Route('/list_activities/{activityId}', name: 'app_delete_activity', methods: ['DELETE'])]
+    #[Route('/activities/{activityId}', name: 'app_delete_activity', methods: ['DELETE'])]
     public function deleteActivity_by_id(String $activityId): JsonResponse
     {
         $this->activityService->deleteActivity($activityId);

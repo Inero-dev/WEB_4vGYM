@@ -19,19 +19,18 @@ class ActivityType
     private ?string $name = null;
 
     #[ORM\Column]
-    private ?int $NumerOfMonitors = null;
+    private ?int $numberOfMonitors = null;
 
     /**
      * @var Collection<int, Activity>
      */
-    #[ORM\OneToMany(targetEntity: Activity::class, mappedBy: 'ActivtyType', orphanRemoval: true)]
-    private Collection $Activities;
+    #[ORM\OneToMany(targetEntity: Activity::class, mappedBy: 'type', orphanRemoval: true)]
+    private Collection $activities;
 
     public function __construct()
     {
-        $this->Activities = new ArrayCollection();
+        $this->activities = new ArrayCollection();
     }
-
 
     public function getId(): ?int
     {
@@ -50,14 +49,14 @@ class ActivityType
         return $this;
     }
 
-    public function getNumerOfMonitors(): ?int
+    public function getNumberOfMonitors(): ?int
     {
-        return $this->NumerOfMonitors;
+        return $this->numberOfMonitors;
     }
 
-    public function setNumerOfMonitors(int $NumerOfMonitors): static
+    public function setNumberOfMonitors(int $numberOfMonitors): static
     {
-        $this->NumerOfMonitors = $NumerOfMonitors;
+        $this->numberOfMonitors = $numberOfMonitors;
 
         return $this;
     }
@@ -67,14 +66,14 @@ class ActivityType
      */
     public function getActivities(): Collection
     {
-        return $this->Activities;
+        return $this->activities;
     }
 
     public function addActivity(Activity $activity): static
     {
-        if (!$this->Activities->contains($activity)) {
-            $this->Activities->add($activity);
-            $activity->setActivtyType($this);
+        if (!$this->activities->contains($activity)) {
+            $this->activities->add($activity);
+            $activity->setType($this);
         }
 
         return $this;
@@ -82,10 +81,10 @@ class ActivityType
 
     public function removeActivity(Activity $activity): static
     {
-        if ($this->Activities->removeElement($activity)) {
+        if ($this->activities->removeElement($activity)) {
             // set the owning side to null (unless already changed)
-            if ($activity->getActivtyType() === $this) {
-                $activity->setActivtyType(null);
+            if ($activity->getType() === $this) {
+                $activity->setType(null);
             }
         }
 
