@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
+#[ORM\Entity(repositoryClass: ActivityRepository::class)]
 class Activity
 {
     #[ORM\Id]
@@ -20,21 +21,6 @@ class Activity
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $end_date = null;
-
-    #[ORM\ManyToOne(inversedBy: 'Activities')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?ActivityType $ActivtyType = null;
-
-    /**
-     * @var Collection<int, ActivityMonitors>
-     */
-    #[ORM\OneToMany(targetEntity: ActivityMonitors::class, mappedBy: 'Activity', orphanRemoval: true)]
-    private Collection $Activities;
-
-    public function __construct()
-    {
-        $this->Activities = new ArrayCollection();
-    }
 
     public function getId(): ?int
     {
@@ -65,46 +51,5 @@ class Activity
         return $this;
     }
 
-    public function getActivtyType(): ?ActivityType
-    {
-        return $this->ActivtyType;
-    }
-
-    public function setActivtyType(?ActivityType $ActivtyType): static
-    {
-        $this->ActivtyType = $ActivtyType;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, ActivityMonitors>
-     */
-    public function getActivities(): Collection
-    {
-        return $this->Activities;
-    }
-
-    public function addActivity(ActivityMonitors $activity): static
-    {
-        if (!$this->Activities->contains($activity)) {
-            $this->Activities->add($activity);
-            $activity->setActivity($this);
-        }
-
-        return $this;
-    }
-
-    public function removeActivity(ActivityMonitors $activity): static
-    {
-        if ($this->Activities->removeElement($activity)) {
-            // set the owning side to null (unless already changed)
-            if ($activity->getActivity() === $this) {
-                $activity->setActivity(null);
-            }
-        }
-
-        return $this;
-    }
-
+    
 }
