@@ -28,14 +28,14 @@ class Monitor
     private ?string $photo = null;
 
     /**
-     * @var Collection<int, ActivityMonitor>
+     * @var Collection<int, ActivityMonitors>
      */
-    #[ORM\OneToMany(targetEntity: ActivityMonitor::class, mappedBy: 'idMonitor', orphanRemoval: true)]
-    private Collection $activities;
+    #[ORM\OneToMany(targetEntity: ActivityMonitors::class, mappedBy: 'Monitor', orphanRemoval: true)]
+    private Collection $Monitors;
 
     public function __construct()
     {
-        $this->activities = new ArrayCollection();
+        $this->Monitors = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -92,29 +92,29 @@ class Monitor
     }
 
     /**
-     * @return Collection<int, ActivityMonitor>
+     * @return Collection<int, ActivityMonitors>
      */
-    public function getActivities(): Collection
+    public function getMonitors(): Collection
     {
-        return $this->activities;
+        return $this->Monitors;
     }
 
-    public function addActivity(ActivityMonitor $activity): static
+    public function addMonitor(ActivityMonitors $monitor): static
     {
-        if (!$this->activities->contains($activity)) {
-            $this->activities->add($activity);
-            $activity->setIdMonitor($this);
+        if (!$this->Monitors->contains($monitor)) {
+            $this->Monitors->add($monitor);
+            $monitor->setMonitor($this);
         }
 
         return $this;
     }
 
-    public function removeActivity(ActivityMonitor $activity): static
+    public function removeMonitor(ActivityMonitors $monitor): static
     {
-        if ($this->activities->removeElement($activity)) {
+        if ($this->Monitors->removeElement($monitor)) {
             // set the owning side to null (unless already changed)
-            if ($activity->getIdMonitor() === $this) {
-                $activity->setIdMonitor(null);
+            if ($monitor->getMonitor() === $this) {
+                $monitor->setMonitor(null);
             }
         }
 

@@ -8,7 +8,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: ActivityRepository::class)]
 class Activity
 {
     #[ORM\Id]
@@ -22,22 +21,19 @@ class Activity
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $end_date = null;
 
-    /**
-     * @var Collection<int, ActivityMonitor>
-     */
-    #[ORM\OneToMany(targetEntity: ActivityMonitor::class, mappedBy: 'idActivity')]
-    private Collection $monitors;
+    #[ORM\ManyToOne(inversedBy: 'Activities')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?ActivityType $ActivtyType = null;
 
     /**
-     * @var Collection<int, ActivityType>
+     * @var Collection<int, ActivityMonitors>
      */
-    #[ORM\OneToMany(targetEntity: ActivityType::class, mappedBy: 'activities')]
-    private Collection $idType;
+    #[ORM\OneToMany(targetEntity: ActivityMonitors::class, mappedBy: 'Activity', orphanRemoval: true)]
+    private Collection $Activities;
 
     public function __construct()
     {
-        $this->monitors = new ArrayCollection();
-        $this->idType = new ArrayCollection();
+        $this->Activities = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -69,63 +65,46 @@ class Activity
         return $this;
     }
 
-    /**
-     * @return Collection<int, ActivityMonitor>
-     */
-    public function getMonitors(): Collection
+    public function getActivtyType(): ?ActivityType
     {
-        return $this->monitors;
+        return $this->ActivtyType;
     }
 
-    public function addMonitor(ActivityMonitor $monitor): static
+    public function setActivtyType(?ActivityType $ActivtyType): static
     {
-        if (!$this->monitors->contains($monitor)) {
-            $this->monitors->add($monitor);
-            $monitor->setIdActivity($this);
+        $this->ActivtyType = $ActivtyType;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ActivityMonitors>
+     */
+    public function getActivities(): Collection
+    {
+        return $this->Activities;
+    }
+
+    public function addActivity(ActivityMonitors $activity): static
+    {
+        if (!$this->Activities->contains($activity)) {
+            $this->Activities->add($activity);
+            $activity->setActivity($this);
         }
 
         return $this;
     }
 
-    public function removeMonitor(ActivityMonitor $monitor): static
+    public function removeActivity(ActivityMonitors $activity): static
     {
-        if ($this->monitors->removeElement($monitor)) {
+        if ($this->Activities->removeElement($activity)) {
             // set the owning side to null (unless already changed)
-            if ($monitor->getIdActivity() === $this) {
-                $monitor->setIdActivity(null);
+            if ($activity->getActivity() === $this) {
+                $activity->setActivity(null);
             }
         }
 
         return $this;
     }
 
-    /**
-     * @return Collection<int, ActivityType>
-     */
-    public function getidType(): Collection
-    {
-        return $this->idType;
-    }
-
-    public function addidType(ActivityType $idType): static
-    {
-        if (!$this->idType->contains($idType)) {
-            $this->idType->add($idType);
-            $idType->setActivities($this);
-        }
-
-        return $this;
-    }
-
-    public function removeidType(ActivityType $idType): static
-    {
-        if ($this->idType->removeElement($idType)) {
-            // set the owning side to null (unless already changed)
-            if ($idType->getActivities() === $this) {
-                $idType->setActivities(null);
-            }
-        }
-
-        return $this;
-    }
 }

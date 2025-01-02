@@ -2,22 +2,22 @@
 
 namespace App\Repository;
 
-use App\Entity\ActivityMonitor;
+use App\Entity\ActivityMonitors;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<ActivityMonitor>
+ * @extends ServiceEntityRepository<ActivityMonitors>
  */
-class ActivityMonitorRepository extends ServiceEntityRepository
+class ActivityMonitorsRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, ActivityMonitor::class);
+        parent::__construct($registry, ActivityMonitors::class);
     }
 
     //    /**
-    //     * @return ActivityMonitor[] Returns an array of ActivityMonitor objects
+    //     * @return ActivityMonitors[] Returns an array of ActivityMonitors objects
     //     */
     //    public function findByExampleField($value): array
     //    {
@@ -31,7 +31,7 @@ class ActivityMonitorRepository extends ServiceEntityRepository
     //        ;
     //    }
 
-    //    public function findOneBySomeField($value): ?ActivityMonitor
+    //    public function findOneBySomeField($value): ?ActivityMonitors
     //    {
     //        return $this->createQueryBuilder('a')
     //            ->andWhere('a.exampleField = :val')

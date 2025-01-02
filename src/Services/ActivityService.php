@@ -105,7 +105,7 @@ class ActivityService
 
         //Craemos la entidad ACTIVITY
         $newActivityEntity = new Activity();
-        $newActivityEntity->setActivityTypeId($activityNewDTO->getIdType()); 
+        $newActivityEntity->setActivtyType(new ActivityType($activityNewDTO->getIdType()));
         $newActivityEntity->setStartDate($activityNewDTO->getStartDate()); 
         $newActivityEntity->setEndDate($activityNewDTO->getEndDate()); 
 
@@ -118,9 +118,10 @@ class ActivityService
         // Crear y persistir los monitores relacionados
         foreach ($activityNewDTO->getMonitors() as  $monitorDTO) {
             $activityMonitor = new ActivityMonitors();
-            $activityMonitor->setIdActivity($newActivityEntity->getId());
-            $activityMonitor->setIdMonitor($monitorDTO); // ID del monitor
+            $activityMonitor->setActivity($newActivityEntity);
+            $activityMonitor->setMonitor(new Monitor($monitorDTO->getId())); // ID del monitor
             $this->entityManager->persist($activityMonitor);
+            
         }
 
 
@@ -195,8 +196,8 @@ class ActivityService
         // Agregar nuevos monitores
         foreach ($activityNew->getMonitors() as $monitorDTO) {
             $activityMonitor = new ActivityMonitors();
-            $activityMonitor->setIdActivity($id);
-            $activityMonitor->setIdMonitor($monitorDTO);
+            $activityMonitor->setActivity(new Activity($id));
+            $activityMonitor->setMonitor(new Monitor($monitorDTO->getId()));
             $this->entityManager->persist($activityMonitor);
         }
 
